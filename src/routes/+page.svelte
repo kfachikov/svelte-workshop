@@ -8,12 +8,8 @@
 		{ id: 2, content: 'Hmm, why is this content not ready...', completed: false }
 	];
 
-    let completed_items = arr.filter(obj => obj.completed).length;
-
     // would sync (imagine that it adds a listener)
-    $: {
-        completed_items = arr.filter(obj => obj.completed).length;
-    }
+    $: completed_items = arr.filter(obj => obj.completed).length;
 
 	let new_content = '';
 </script>
