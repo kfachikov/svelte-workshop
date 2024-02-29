@@ -27,5 +27,22 @@ export const actions = {
                 completed: false,
             }
         )
+    },
+
+    async toggle({request}) {
+        const data = await request.formData();
+        const todo_id = data.get('todo_id');
+        
+        if(!todo_id) {
+            return fail(400);
+        }
+
+        const todo = todos.find(todo => todo.id === todo_id.toString());
+        
+        if(!todo) {
+            return fail(500, { message: 'Cannot find the necessary todo...' })
+        }
+
+        todo.completed = !todo.completed;
     }
 }

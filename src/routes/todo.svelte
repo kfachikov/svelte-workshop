@@ -1,4 +1,6 @@
 <script>
+	import { enhance } from '$app/forms';
+
 	/**
 	 * @type {boolean}
 	 */
@@ -16,18 +18,21 @@
 	export let id;
 </script>
 
-<!-- not specifying the on:click action, it would get dispatched to the parent -->
-<button class:completed on:click>
-	{content} - {completed}
-</button>
+<form action="?/toggle" method="post" use:enhance>
+	<input value={id} name="todo_id" type="hidden">
+	<!-- not specifying the on:click action, it would get dispatched to the parent -->
+	<button class:completed on:click>
+		{content} - {completed}
+	</button>
+</form>
 
 <!-- style tags are available only to the component they are defined in -->
 <style>
-    .completed {
-        text-decoration: line-through;
-    }
-    button {
-        all: unset;
-        display: block;
-    }
+	.completed {
+		text-decoration: line-through;
+	}
+	button {
+		all: unset;
+		display: block;
+	}
 </style>
