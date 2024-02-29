@@ -1,61 +1,62 @@
 <!--
-    Everything seems to be build using block.
-
-    Svelte accounts a variable change only when an assignment is used, as it does static code analysis.
-
-    Starting a block - #
-    Continuing a block - :
-    Closing a block - /
+    There is specific semantic to the components starting with '+'.
 -->
 
 <script>
-	let count = 0;
-	let arr = [0, 1, 2, 3];
+	let arr = [
+		{ id: 1, content: 'Random content!', completed: true },
+		{ id: 2, content: 'Hmm, why is this content not ready...', completed: false }
+	];
 
-	/**
-	 * @param {number} ms
-	 */
-	function sleep(ms) {
-		return new Promise((r) => setTimeout(r, ms));
-	}
+    let completed_items = arr.filter(obj => obj.completed).length;
 
-	async function get_data() {
-		await sleep(4000); // simulate data fetching
-		if (Math.random() > 0.5) throw new Error();
-        return 42;
-	}
+    // would sync (imagine that it adds a listener)
+    $: {
+        completed_items = arr.filter(obj => obj.completed).length;
+    }
+
+	let new_content = '';
 </script>
+
+<!-- binding values to different directives -->
+<input bind:value={new_content} />
 
 <button
 	on:click={() => {
-		// we can use JavaScript
-		count++; // it knows it has to re-render the component
+		arr.push({
+			id: crypto.randomUUID(),
+			completed: false,
+			content: new_content
+		});
+        arr = arr;
+        new_content = '';
 	}}
 >
-	{count}
+	Add TODO!
 </button>
 
-<!-- declare a block to be visualized only when a condition is satisfied -->
-{#if count === 0}
-	zero
-{:else if count % 2 === 0}
-	even
-{:else}
-	odd
-{/if}
+Completed Items: {completed_items}
 
-<!-- declare block to iterate the elements of an iterable structure -->
-{#each arr as item}
-	<!-- renaming item to count would shadow the "global" variable count -->
-	<div>
-		{item}
-	</div>
+<!-- trying to make each element a div would cause svelte to raise a warning, as the user would not be expecting clickable div -->
+{#each arr as obj (obj.id)}
+    <!-- alternatively to the class, we can use style : style="text-decoration: {obj.completed ? 'line-through' : ''};" -->
+	<button 
+    class:completed={obj.completed}
+		on:click={() => {
+			obj.completed = !obj.completed;
+			arr = arr;
+		}}
+	>
+		{obj.content} - {obj.completed}
+	</button>
 {/each}
 
-{#await get_data()}
-	Loading... <!-- would be visualized until the function returns (the promise resolves) -->
-{:then result}
-	{result}
-{:catch e}
-	{e}
-{/await}
+<style>
+    .completed {
+        text-decoration: line-through;
+    }
+    button {
+        all: unset;
+        display: block;
+    }
+</style>
