@@ -6,40 +6,33 @@
 
 <script>
     import Todo from './todo.svelte'
-	let arr = [
-		{ id: '1', content: 'Random content!', completed: true },
-		{ id: '2', content: 'Hmm, why is this content not ready...', completed: false }
-	];
+
+    // should be named `data` so Svelte can populate it with the data returned by the `load` function in the corresponding script file
+    export let data;
+
+    $: todos = data.todos;
 
     // would sync (imagine that it adds a listener)
-    $: completed_items = arr.filter(obj => obj.completed).length;
+    $: completed_items = todos.filter(obj => obj.completed).length;
 
-	let new_content = '';
+	let new_todo = '';
 </script>
 
+<!-- submitting a form would reload the page -->
+<form action="?/add" method="post">
 <!-- binding values to different directives -->
-<input bind:value={new_content} />
-
-<button
-	on:click={() => {
-		arr.push({
-			id: crypto.randomUUID(),
-			completed: false,
-			content: new_content
-		});
-        arr = arr;
-        new_content = '';
-	}}
->
+<input name="new_todo" bind:value={new_todo} />
+<button>
 	Add TODO!
 </button>
+</form>
 
 Completed Items: {completed_items}
 
 <!-- trying to make each element a div would cause svelte to raise a warning, as the user would not be expecting clickable div -->
-{#each arr as obj (obj.id)}
+{#each todos as obj (obj.id)}
     <Todo on:click={() => {
         obj.completed = !obj.completed;
-        arr = arr;
+        todos = todos;
     }} {...obj} />
 {/each}
