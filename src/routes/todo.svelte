@@ -26,6 +26,8 @@
 	</button>
 </form>
 
+<a href="/todo/{id}">Edit</a>
+
 <!-- style tags are available only to the component they are defined in -->
 <style>
 	.completed {
